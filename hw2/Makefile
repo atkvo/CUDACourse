@@ -12,10 +12,13 @@ endif
 
 NVCCFLAGS	:= -lineinfo -arch=sm_53 --ptxas-options=-v -g 
 
-all: const
+all: single multiple
 
-const: cmpe297_hw2_rabin_karp.o $(DEP)
-	$(CC) $(INC) $(NVCCFLAGS) -o rabinkarp cmpe297_hw2_rabin_karp.o $(LIB)
+single: cmpe297_hw2_rabin_karp_single.o $(DEP)
+	$(CC) $(INC) $(NVCCFLAGS) -o rabinkarp_single cmpe297_hw2_rabin_karp_single.o $(LIB)
+
+multiple: cmpe297_hw2_rabin_karp_mult.o $(DEP)
+	$(CC) $(INC) $(NVCCFLAGS) -o rabinkarp_mult cmpe297_hw2_rabin_karp_mult.o $(LIB)
 
 .cpp.o:
 	$(CC) $(INC) $(NVCCFLAGS) $(DEF) -c $< -o $@ 
