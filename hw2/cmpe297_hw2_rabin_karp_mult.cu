@@ -42,10 +42,42 @@ int main()
     int pattern_length = 2;     /*Pattern Length*/
     int input_length = 32;       /*Input Length*/
 
+    const int numberOfPatterns = 4;
+    char* patterns2d[] = {
+        "ABR", "OME", "EAB", "RACT"
+    };
+    int lengths[numberOfPatterns] = { 3, 3, 3, 4 };
+    int startstops[numberOfPatterns*2] = { 
+        0, 2,
+        3, 5, 
+        6, 8,
+        9, 12
+    };
+
+    // flatten the 2d character array
+    int totalLengths = 0;
+    for(int i = 0; i < numberOfPatterns; i++) {
+        totalLengths += lengths[i];
+    }
+    char * patternsFlat;
+    patternsFlat  = (char*)malloc(sizeof(char)*totalLengths);
+    for(int i = 0; i < numberOfPatterns; i++) {
+        for(int j = 0; j < lengths[i]; j++) {
+            patternsFlat[startstops[i*2] + j] = patterns2d[i][j];
+            printf("%c", patterns2d[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Done flattening 2d array\n");
+    // done flattening 2d array into patternsFlat
+    
+
     // device variables
     char* d_input;
     char* d_pattern;
     int* d_result;
+    int* d_startstops;
+    int* d_patternLengths;
     unsigned long long* d_runtime;
 
     // measure the execution time by using clock() api in the kernel as we did in Lab3
