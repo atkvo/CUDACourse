@@ -6,9 +6,7 @@
 #include <cuda_runtime.h>
 
 
-/*ADD CODE HERE: Implement the parallel version of the sequential Rabin-Karp*/
 __global__ void 
-// findIfExistsCu(char* input, int input_length, char* pattern, int pattern_length, int patHash, int* result, unsigned long long* runtime)
 findIfExistsCu(char* input, int input_length, char* pattern, int numberOfPatterns, int* patternLengths, int *startstops, int* patHash, int* result, unsigned long long* runtime)
 { 
     unsigned long long start_time = clock64();
@@ -21,7 +19,6 @@ findIfExistsCu(char* input, int input_length, char* pattern, int numberOfPattern
             input_hash = (input_hash * 256 + input[k]) % 997;
         }
         if(input_hash == patHash[patIndex]) {
-            printf("+++ match @ %i\n", patIndex);
             result[patIndex] |= 1;
         }
         else { 
@@ -36,21 +33,22 @@ int main()
 {
     // host variables
     char input[] = "HEABAL AND SOME MORE CHARACTERS";    /*Sample Input*/
-    int* patHash;               /*hash for the pattern*/
-    int* result;                /*Result array*/
-    unsigned long long* runtime;               /*Exection cycles*/
+    int* patHash;                /*hash for the pattern*/
+    int* result;                 /*Result array*/
+    unsigned long long* runtime; /*Exection cycles*/
     int input_length = 31;       /*Input Length*/
 
-    const int numberOfPatterns = 4;
-    char* patterns2d[] = {
-        "ABR", "OME", "EAB", "RACT"
+    const int numberOfPatterns = 5;
+    char* patterns2d[] = {          /*2D array patterns*/
+        "ABR", "OME", "EAB", "RACT", "AND SOME"
     };
-    int lengths[numberOfPatterns] = { 3, 3, 3, 4 };
+    int lengths[numberOfPatterns] = { 3, 3, 3, 4, 8};
     int startstops[numberOfPatterns*2] = { 
         0, 2,
         3, 5, 
         6, 8,
-        9, 12
+        9, 12,
+        13, 20
     };
     patHash = (int*)malloc(sizeof(int)*numberOfPatterns);
 
@@ -213,16 +211,20 @@ int main()
     printf("Input string = %s\n", input); 
     for (int i = 0; i < numberOfPatterns; i++) { 
         if(result[i] == 1) {
-            printf("Pattern:  %s \twas found.\n", patterns2d[i]);
+            printf("Pattern FOUND:    %s\n", patterns2d[i]);
         }
         else {
-            printf("Pattern:  %s \twas NOT found.\n", patterns2d[i]);
+            printf("Pattern MISSING:  %s\n", patterns2d[i]);
         }
     }
 
     cudaFree(d_input);
     cudaFree(d_pattern);
     cudaFree(d_runtime);
+    cudaFree(d_patternLengths);
+    cudaFree(d_patHash);
+    cudaFree(d_startstops);
+    cudaFree(d_result);
     
     return 0;
 }
