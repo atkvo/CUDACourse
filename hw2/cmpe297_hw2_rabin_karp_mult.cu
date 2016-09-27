@@ -40,7 +40,7 @@ int main()
 
     const int numberOfPatterns = 5;
     char* patterns2d[] = {          /*2D array patterns*/
-        "ABR", "OME", "EAB", "RACT", "AND SOME"
+        "ABR", "OME", "DNA", "RACT", "AND SOME"
     };
     int lengths[numberOfPatterns] = { 3, 3, 3, 4, 8};
     int startstops[numberOfPatterns*2] = { 
