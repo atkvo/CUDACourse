@@ -54,22 +54,25 @@ __global__ void k_Sudoku(stContext *context)
     
     int value = 0;
     int temp = 0;
+
     while(context->num_options[row][col] > 1) {
         context->num_options[row][col] = 0;
         value = 0;
         temp = 0;
         for(int k = 0; k < 9; k++) {
-            temp = IS_OPTION(row, col, k);
+            temp = IS_OPTION(row, col, k);  // check if potential cell value is unique
             if(temp == 1) {
+                // if unique, save the value (index k)
                 context->num_options[row][col]++;
                 value = k;
             }
         }
+        // single option is found
         if(context->num_options[row][col] == 1) {
             context->not_in_row[row][value] = 0;
             context->not_in_col[col][value] = 0;
             context->not_in_cell[(row)/3+((col)/3)*3][value] = 0;
-            context->val[row][col] = value + 1;
+            context->val[row][col] = value + 1;     // set row,col to value + 1 (due to value being index 0-8)
         }
     }
 }
