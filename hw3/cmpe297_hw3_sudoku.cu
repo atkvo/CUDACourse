@@ -52,8 +52,8 @@ __global__ void k_Sudoku(stContext *context)
     const unsigned int col = threadIdx.x;
     const unsigned int row = threadIdx.y;
     
-
     // TODO: Insert Your Code Here
+    printf("0,1 = %i", context->val[0][1]);
 
 }
 
@@ -66,13 +66,15 @@ int main(int argc, char **argv)
 
     stContext *k_context;
 	
-    err = // TODO: Allocate matrix in GPU device memory 
+    // Allocate matrix in GPU device memory 
+    err = cudaMalloc((void**)&k_context, sizeof(stContext));
     if (err != cudaSuccess)
     {
         fprintf(stderr, "Failed to allocate device data (error code %s)!\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
-    err = // TODO: Copy the input matrix to GPU
+    // Copy the input matrix to GPU
+    err = cudaMemcpy(k_context, &context, sizeof(stContext), cudaMemcpyHostToDevice);
     if (err != cudaSuccess)
     {
         fprintf(stderr, "Failed to copy data from host to device (error code %s)!\n", cudaGetErrorString(err));
@@ -84,7 +86,8 @@ int main(int argc, char **argv)
     dim3 dimBlock(WIDTH, WIDTH, 1);
     dim3 dimGrid(1, 1, 1);
 
-    // TODO: Call the kernel function
+    // Call the kernel function
+    k_Sudoku<<<dimGrid, dimBlock>>>(k_context);
     err = cudaGetLastError();
     if (err != cudaSuccess)
     {
@@ -93,7 +96,8 @@ int main(int argc, char **argv)
     }
     cudaThreadSynchronize();
 
-    err = // TODO: Copy the result matrix from the GPU device memory
+    // Copy the result matrix from the GPU device memory
+    err = cudaMemcpy(&context, k_context, sizeof(stContext), cudaMemcpyDeviceToHost);
     if (err != cudaSuccess)
     {
         fprintf(stderr, "Failed to copy data from device to host (error code %s)!\n", cudaGetErrorString(err));
