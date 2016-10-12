@@ -52,8 +52,26 @@ __global__ void k_Sudoku(stContext *context)
     const unsigned int col = threadIdx.x;
     const unsigned int row = threadIdx.y;
     
-    // TODO: Insert Your Code Here
-    printf("0,1 = %i", context->val[0][1]);
+    int value = 0;
+    int temp = 0;
+    while(context->num_options[row][col] > 1) {
+        context->num_options[row][col] = 0;
+        value = 0;
+        temp = 0;
+        for(int k = 0; k < 9; k++) {
+            temp = IS_OPTION(row, col, k);
+            if(temp == 1) {
+                context->num_options[row][col]++;
+                value = k;
+            }
+        }
+        if(context->num_options[row][col] == 1) {
+            context->not_in_row[row][value] = 0;
+            context->not_in_col[col][value] = 0;
+            context->not_in_cell[(row)/3+((col)/3)*3][value] = 0;
+            context->val[row][col] = value + 1;
+        }
+    }
 
 }
 
@@ -85,7 +103,7 @@ int main(int argc, char **argv)
     // each thread can deal with one entry of the matrix
     dim3 dimBlock(WIDTH, WIDTH, 1);
     dim3 dimGrid(1, 1, 1);
-
+	
     // Call the kernel function
     k_Sudoku<<<dimGrid, dimBlock>>>(k_context);
     err = cudaGetLastError();
