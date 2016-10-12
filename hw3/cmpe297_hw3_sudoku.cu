@@ -72,7 +72,6 @@ __global__ void k_Sudoku(stContext *context)
             context->val[row][col] = value + 1;
         }
     }
-
 }
 
 int main(int argc, char **argv)
@@ -114,6 +113,7 @@ int main(int argc, char **argv)
     }
     cudaThreadSynchronize();
 
+    unsigned long long start_cycle = clock();
     // Copy the result matrix from the GPU device memory
     err = cudaMemcpy(&context, k_context, sizeof(stContext), cudaMemcpyDeviceToHost);
     if (err != cudaSuccess)
@@ -122,9 +122,13 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     cudaThreadSynchronize();
+    unsigned long long end_cycle = clock();
 	
     // Print the result
     print_all();
+    printf("Start cycle: %i\n", start_cycle);
+    printf("End cycle: %i\n", end_cycle);
+    printf("Total cycles: %d\n", end_cycle - start_cycle);
 
     // Free the device memory
     err = cudaFree(k_context);
